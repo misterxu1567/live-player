@@ -1,0 +1,15 @@
+# k8s
+deploy-ns/secret-*.yaml
+deploy-ns/configmap-*.yaml
+
+_Store
+.DS_Store
+/vendor
+.env
+.idea
+composer.lock
+npm-debug.log
+
+node_modules/
+dist/
+
