@@ -16,12 +16,23 @@
     <!-- 自定义控制栏 -->
     <div class="livePlayerCtrl" ref="customCtrlBar">
       <span class="type">直播</span>
+      <!-- 退出全屏 -->
+      <i class="iconfont icon-tuichuquanping1 fillBtn" v-if="fullScreenStatus" @click="exitFullScreen" />
       <!-- 全屏 -->
-      <i class="iconfont icon-quanping fillBtn" @click="enterFullScreen" />
+      <i class="iconfont icon-quanping fillBtn" v-else @click="enterFullScreen" />
       <!-- 声音 -->
       <div class="volume">
-        <i class="volumeBtn iconfont icon-shengyin" @click="showVolume = !showVolume" />
-        <SliderVertical v-show="showVolume" v-model="volumeVal" :max="100" :min="0" />
+        <i
+          class="iconfont icon-shengyin volumeBtn"
+          v-if="volumeVal > 0"
+          @click="showVolume = !showVolume"
+        />
+        <i
+          class="iconfont icon-xitongjingyin volumeBtn"
+          v-else
+          @click="showVolume = !showVolume"
+        />
+        <SliderVertical v-show="showVolume" v-model="volumeVal" color="#f00" :max="100" :min="0" />
       </div>
       <!-- 清晰度-->
       <Select v-model="legibilityVal" class="legibility" @on-change="legibilityChange">
@@ -68,7 +79,9 @@ export default {
       ],
       legibilityVal: 1, // 默认清晰度
       volumeVal: 40, // 声音大小
-      showVolume: false // 声音拖动条切换
+      showVolume: false, // 声音拖动条切换
+      timer: null,
+      fullScreenStatus: true // 全屏状态 true => 全屏，false => 非全屏
     };
   },
   computed: {
@@ -81,19 +94,36 @@ export default {
   mounted() {
     this.player = videojs(this.id); // 视频对象
     this.player.volume(0);
+    this.watchFullScreen();
+    document.addEventListener("click", this.hideVolume, false);
   },
   methods: {
+    // 点击声音以外的dom隐藏拖动条
+    hideVolume(e) {
+      let target = e.target;
+      let t = document.getElementsByClassName("volume")[0];
+      let bool = target.contains(t);
+      if (bool) {
+        this.showVolume = false;
+      }
+    },
+    // 监听视频全屏状态
+    watchFullScreen() {
+      this.timer = setInterval(() => {
+        this.fullScreenStatus = Lib.isFullScreen();
+      }, 1000);
+    },
     // 全屏
     enterFullScreen() {
-      Lib.launchFullscreen(document.getElementById(this.id));
+      Lib.launchFullscreen(document.getElementById(this.id).parentNode);
+    },
+    // 退出全屏
+    exitFullScreen() {
+      Lib.exitFullscreen(document.getElementById(this.id).parentNode);
     },
     // 监听清晰度变化
     legibilityChange() {
       this.$emit("legibilityChange", this.legibilityVal);
-    },
-    // 音量提示
-    format(val) {
-      return "音量 " + val;
     }
   },
   watch: {
@@ -114,6 +144,8 @@ export default {
     // 销毁video实例
     this.player.dispose();
     this.player = null;
+    clearInterval(this.timer); // 清除监控全屏定时器
+    document.removeEventListener("click", this.hideVolume);
   }
 };
 </script>
@@ -180,9 +212,8 @@ export default {
     float: right;
     width: 60px;
     height: 36px;
-    color: #fff;
-    text-align: center;
-    // 覆盖
+    color:#fff;
+    // 覆盖iview（此处使用iview下拉组件，注本项目在外侧并没有引入iview）
     /deep/.ivu-select-selection {
       background: none;
       border: none;

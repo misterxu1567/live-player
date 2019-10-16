@@ -145,6 +145,10 @@ const Library = {
             element.msRequestFullscreen();
         }
     },
+    // 判断是否是全屏
+    isFullScreen() {
+        return document.isFullScreen || document.mozIsFullScreen || document.webkitIsFullScreen;
+    },
     // arrary => object (eg: [label:'元素', value: 1] => {1: '元素'})，必须为lable & value
     arraryToObject(arrary, key) {
         let Obj = {};
@@ -206,7 +210,6 @@ const Library = {
     createRandomId() {
         return (Math.random() * 10000000).toString(16).substr(0, 4) + '-' + (new Date()).getTime() + '-' + Math.random().toString().substr(2, 5);
     }
-
 
 };
 
