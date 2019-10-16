@@ -13,6 +13,7 @@
     "vue-router": "^3.0.7"
   },
   "devDependencies": {
+    "@misterxu/vue-slider-x": "^1.0.0",
     "@vue/cli-plugin-babel": "^3.6.0",
     "@vue/cli-plugin-eslint": "^3.6.0",
     "@vue/cli-service": "^3.6.0",

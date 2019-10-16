@@ -37,7 +37,7 @@ import "video.js/dist/video-js.css";
 import videojs from "video.js";
 import "videojs-flash";
 import Lib from "@/lib";
-import SliderVertical from "./components/SliderVertical";
+import SliderVertical from "@misterxu/vue-slider-x";
 
 export default {
   name: "",
